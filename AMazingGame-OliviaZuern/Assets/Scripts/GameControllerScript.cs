@@ -17,14 +17,14 @@ public class GameControllerScript : MonoBehaviour {
 	//[SerializeField] private byte previousHeight;
 
 	//public void OnValidate()
-	//{
-	//	previousWidth = width;
-	//	previousHeight = height;
+	/*{
 
-	//	if (width != previousWidth || height != previousHeight) {
-	//		RecreateMaze();
-	//	}
-	//}
+		if (width != previousWidth || height != previousHeight) {
+			RecreateMaze();
+		}
+		previousWidth = width;
+		previousHeight = height;
+	}*/
 
 	//private MazeScript maze;
 	// Use this for initialization
