@@ -14,21 +14,46 @@ public class MazeScript
 	public string mapString;
 	public bool check;
 
-	// private int i;
 	//private int j;
 
 	private int XX;
 	public byte cellX;
 	public byte cellY;
 
+	private GameObject cam;
+	private GameObject floor;
+
 	//Constructor - constructs a new instance of this thing, and gives you back a reference to it
 	public MazeScript(byte width, byte height) {
 		mapWidth = width; //You could sanitize these, you might want to
 		mapHeight = height;
-		ResizeMap();
+
+		//ResizeMap();
+
+		if (Mathf.FloorToInt(mapHeight / 2) * 2 == mapHeight) {
+			mapHeight += 1;
+		}
+		if (Mathf.FloorToInt(mapWidth / 2) * 2 == mapWidth) {
+			mapWidth += 1;
+		}
+		if (mapHeight < 7) {
+			mapHeight = 7;
+		}
+		if (mapWidth < 7) {
+			mapWidth = 7;
+		}
+
 		mapArray = new byte[mapWidth, mapHeight];
 		wallList = new List<Vector2>(); //Capacity -- This is a List thing
-		
+
+		cam = GameObject.FindGameObjectWithTag("MainCamera");
+		floor = GameObject.FindGameObjectWithTag("Floor");
+
+		floor.transform.localScale = new Vector3(mapWidth, 1, mapHeight);
+		floor.transform.position = new Vector3(mapWidth / 2, -0.5f, mapHeight / 2);
+		cam.transform.position = new Vector3(mapWidth / 2, 20,mapHeight / 2);
+		cam.GetComponent<Camera>().orthographicSize = (mapHeight/2)+1;
+
 		// note: 0=path, 1=wall
 
 		//1)Full grid of walls (false)
@@ -71,46 +96,82 @@ public class MazeScript
 			 // Check all walls
 			 
 			if ( cellX <= mapWidth - 2 && cellX >= 1) {
-				if (mapArray[Mathf.FloorToInt(cellX + 1), Mathf.FloorToInt(cellY)] == 0) { visited += 1; }
-			}
-			if ( cellX >= 1 && cellX <= mapWidth - 2) {
-				if (mapArray[Mathf.FloorToInt(cellX - 1), Mathf.FloorToInt(cellY)] == 0) { visited += 1; }		
-			}
-			if ( cellY >= 1 && cellY <= mapHeight - 2) {
-				if (mapArray[Mathf.FloorToInt(cellX), Mathf.FloorToInt(cellY - 1)] == 0) { visited += 1; }
-			}
-			if ( cellY <= mapHeight - 2 && cellY >= 1) {
-				if (mapArray[Mathf.FloorToInt(cellX), Mathf.FloorToInt(cellY + 1)] == 0) { visited += 1; }
-			}
-
-				/*	 // Check two sides of wall
-			if (check == false && cellX <= mapWidth - 2 && cellX >= 1) {
-				if (mapArray[cellX + 1, cellY] == 0 && mapArray[cellX - 1, cellY] != 0) {
-					check = true;
-					mapArray[cellX, cellY] = 0;
-					mapArray[cellX - 1, cellY] = 1;
+				if (mapArray[Mathf.FloorToInt(cellX + 1), Mathf.FloorToInt(cellY)] == 0) {
+					visited += 1;
+					if (mapArray[Mathf.FloorToInt(cellX - 1), Mathf.FloorToInt(cellY + 1)] == 0 || mapArray[Mathf.FloorToInt(cellX - 1), Mathf.FloorToInt(cellY - 1)] == 0) {
+						visited += 1;
+					}
 				}
 			}
-			if (check == false && cellX >= 1 && cellX <= mapWidth - 2) {
-					if (mapArray[cellX - 1, cellY] == 0 && mapArray[cellX + 1, cellY] != 0) {
-						check = true;
-						mapArray[cellX, cellY] = 0;
-						mapArray[cellX + 1, cellY] = 1;
+			if ( cellX >= 1 && cellX <= mapWidth - 2) {
+				if (mapArray[Mathf.FloorToInt(cellX - 1), Mathf.FloorToInt(cellY)] == 0) {
+					visited += 1;
+					if (mapArray[Mathf.FloorToInt(cellX + 1), Mathf.FloorToInt(cellY + 1)] == 0 || mapArray[Mathf.FloorToInt(cellX + 1), Mathf.FloorToInt(cellY - 1)] == 0) {
+						visited += 1;
 					}
+					
+				}
 			}
-			if (check == false && cellY >= 1 && cellY <= mapHeight - 2) {
-					if (mapArray[cellX, cellY - 1] == 0 && mapArray[cellX, cellY + 1] != 0) {
-						check = true;
-						mapArray[cellX, cellY] = 0;
-						mapArray[cellX, cellY + 1] = 1;
+			if ( cellY >= 1 && cellY <= mapHeight - 2) {
+				if (mapArray[Mathf.FloorToInt(cellX), Mathf.FloorToInt(cellY - 1)] == 0) {
+					visited += 1;
+					if (mapArray[Mathf.FloorToInt(cellX + 1), Mathf.FloorToInt(cellY + 1)] == 0 || mapArray[Mathf.FloorToInt(cellX - 1), Mathf.FloorToInt(cellY + 1)] == 0) {
+						visited += 1;
 					}
+				}
 			}
-			if (check == false && cellY <= mapHeight - 2 && cellY >= 1) 
-				if (mapArray[cellX, cellY + 1] == 0 && mapArray[cellX, cellY - 1] != 0) {
+			if ( cellY <= mapHeight - 2 && cellY >= 1) {
+				if (mapArray[Mathf.FloorToInt(cellX), Mathf.FloorToInt(cellY + 1)] == 0) {
+					visited += 1;
+					
+					if (mapArray[Mathf.FloorToInt(cellX + 1), Mathf.FloorToInt(cellY - 1)] == 0 || mapArray[Mathf.FloorToInt(cellX - 1), Mathf.FloorToInt(cellY - 1)] == 0) {
+						visited += 1;
+					}
+				}
+			}
+
+			//Backup- no diagonals  
+			/*if (cellX <= mapWidth - 2 && cellX >= 1) {
+				if (mapArray[Mathf.FloorToInt(cellX + 1), Mathf.FloorToInt(cellY)] == 0) { visited += 1; }
+			}
+			if (cellX >= 1 && cellX <= mapWidth - 2) {
+				if (mapArray[Mathf.FloorToInt(cellX - 1), Mathf.FloorToInt(cellY)] == 0) { visited += 1; }
+			}
+			if (cellY >= 1 && cellY <= mapHeight - 2) {
+				if (mapArray[Mathf.FloorToInt(cellX), Mathf.FloorToInt(cellY - 1)] == 0) { visited += 1; }
+			}
+			if (cellY <= mapHeight - 2 && cellY >= 1) {
+				if (mapArray[Mathf.FloorToInt(cellX), Mathf.FloorToInt(cellY + 1)] == 0) { visited += 1; }
+			}*/
+
+			/*	 // Check two sides of wall
+		if (check == false && cellX <= mapWidth - 2 && cellX >= 1) {
+			if (mapArray[cellX + 1, cellY] == 0 && mapArray[cellX - 1, cellY] != 0) {
+				check = true;
+				mapArray[cellX, cellY] = 0;
+				mapArray[cellX - 1, cellY] = 1;
+			}
+		}
+		if (check == false && cellX >= 1 && cellX <= mapWidth - 2) {
+				if (mapArray[cellX - 1, cellY] == 0 && mapArray[cellX + 1, cellY] != 0) {
 					check = true;
 					mapArray[cellX, cellY] = 0;
-					mapArray[cellX, cellY - 1] = 1;
-				}*/
+					mapArray[cellX + 1, cellY] = 1;
+				}
+		}
+		if (check == false && cellY >= 1 && cellY <= mapHeight - 2) {
+				if (mapArray[cellX, cellY - 1] == 0 && mapArray[cellX, cellY + 1] != 0) {
+					check = true;
+					mapArray[cellX, cellY] = 0;
+					mapArray[cellX, cellY + 1] = 1;
+				}
+		}
+		if (check == false && cellY <= mapHeight - 2 && cellY >= 1) 
+			if (mapArray[cellX, cellY + 1] == 0 && mapArray[cellX, cellY - 1] != 0) {
+				check = true;
+				mapArray[cellX, cellY] = 0;
+				mapArray[cellX, cellY - 1] = 1;
+			}*/
 
 			//  if (mapArray[Mathf.FloorToInt(cellX + 1), Mathf.FloorToInt(cellY)] == 0) { visited += 1; }
 			//  if (mapArray[Mathf.FloorToInt(cellX - 1), Mathf.FloorToInt(cellY)] == 0) { visited += 1; }
@@ -141,16 +202,16 @@ public class MazeScript
 
 
 				if (cellX <= mapWidth - 2) {
-					if (mapArray[Mathf.FloorToInt(cellX + 1), Mathf.FloorToInt(cellY)] != 0) { mapArray[Mathf.FloorToInt(cellX + 1), Mathf.FloorToInt(cellY)] = 1; }
+					if (mapArray[Mathf.FloorToInt(cellX + 1), Mathf.FloorToInt(cellY)] ==2) { mapArray[Mathf.FloorToInt(cellX + 1), Mathf.FloorToInt(cellY)] = 1; }
 				}
 				if (cellX >= 1) {
-					if (mapArray[Mathf.FloorToInt(cellX - 1), Mathf.FloorToInt(cellY)] != 0) { mapArray[Mathf.FloorToInt(cellX - 1), Mathf.FloorToInt(cellY)] = 1; }
+					if (mapArray[Mathf.FloorToInt(cellX - 1), Mathf.FloorToInt(cellY)] == 2) { mapArray[Mathf.FloorToInt(cellX - 1), Mathf.FloorToInt(cellY)] = 1; }
 				}
 				if (cellY >= 1) {
-					if (mapArray[Mathf.FloorToInt(cellX), Mathf.FloorToInt(cellY - 1)] != 0) { mapArray[Mathf.FloorToInt(cellX), Mathf.FloorToInt(cellY - 1)] = 1; }
+					if (mapArray[Mathf.FloorToInt(cellX), Mathf.FloorToInt(cellY - 1)] == 2) { mapArray[Mathf.FloorToInt(cellX), Mathf.FloorToInt(cellY - 1)] = 1; }
 				}
 				if (cellY <= mapHeight - 2) {
-					if (mapArray[Mathf.FloorToInt(cellX), Mathf.FloorToInt(cellY + 1)] != 0) { mapArray[Mathf.FloorToInt(cellX), Mathf.FloorToInt(cellY + 1)] = 1; }
+					if (mapArray[Mathf.FloorToInt(cellX), Mathf.FloorToInt(cellY + 1)] == 2) { mapArray[Mathf.FloorToInt(cellX), Mathf.FloorToInt(cellY + 1)] = 1; }
 				}
 		
 
@@ -192,6 +253,7 @@ public class MazeScript
 		for (int y = 0; y < mapHeight; y++) {
 			for (int x = 0; x < mapWidth; x++) {
 				mapString += mapArray[x, y];
+			
 			}
 
 			mapString += System.Environment.NewLine; //"\n"

@@ -10,6 +10,8 @@ public class GameControllerScript : MonoBehaviour {
 	//Null is not supported by serialization in Unity
 	public MazeScript maze;
 
+	public GameObject cube;
+	
 	[SerializeField] private byte width = 5;
 	[SerializeField] private byte height = 10;
 
@@ -29,6 +31,9 @@ public class GameControllerScript : MonoBehaviour {
 	//private MazeScript maze;
 	// Use this for initialization
 	void Start () {
+	//	cam = GameObject.FindGameObjectWithTag("MainCamera");
+		cube = GameObject.FindGameObjectWithTag("Cube");
+	//	floor = GameObject.FindGameObjectWithTag("floor");
 
 		// maze =  GetComponent<MazeScript>();
 		//maze.MazeGen();
@@ -38,8 +43,20 @@ public class GameControllerScript : MonoBehaviour {
 	private void RecreateMaze()
 	{
 		maze = new MazeScript(width, height);
+		width = maze.mapWidth;
+		height = maze.mapHeight;
 
 		maze.DebugMap();
+
+
+		for (int y = 0; y < maze.mapHeight; y++) {
+			for (int x = 0; x < maze.mapWidth; x++) {
+				if (maze.mapArray[x,y] != 0) {
+					Instantiate(cube, new Vector3(x, 0.5f, y), Quaternion.identity);
+				}
+
+			}
+		}
 	}
 
 }
