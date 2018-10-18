@@ -238,12 +238,7 @@ public class MazeScript
 		if (mapWidth < 7) {
 			mapWidth = 7;
 		}
-		if (mapHeight > 255) {
-			mapHeight = 255;
-		}
-		if (mapWidth > 255) {
-			mapWidth = 255;
-		}
+		
 
 
 
