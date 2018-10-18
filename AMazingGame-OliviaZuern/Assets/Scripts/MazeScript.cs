@@ -20,8 +20,7 @@ public class MazeScript
 	public byte cellX;
 	public byte cellY;
 
-	private GameObject cam;
-	private GameObject floor;
+
 
 	//Constructor - constructs a new instance of this thing, and gives you back a reference to it
 	public MazeScript(byte width, byte height) {
@@ -46,13 +45,7 @@ public class MazeScript
 		mapArray = new byte[mapWidth, mapHeight];
 		wallList = new List<Vector2>(); //Capacity -- This is a List thing
 
-		cam = GameObject.FindGameObjectWithTag("MainCamera");
-		floor = GameObject.FindGameObjectWithTag("Floor");
-
-		floor.transform.localScale = new Vector3(mapWidth, 1, mapHeight);
-		floor.transform.position = new Vector3(mapWidth / 2, -0.5f, mapHeight / 2);
-		cam.transform.position = new Vector3(mapWidth / 2, 20,mapHeight / 2);
-		cam.GetComponent<Camera>().orthographicSize = (mapHeight/2)+1;
+		
 
 		// note: 0=path, 1=wall
 
@@ -245,6 +238,13 @@ public class MazeScript
 		if (mapWidth < 7) {
 			mapWidth = 7;
 		}
+		if (mapHeight > 255) {
+			mapHeight = 255;
+		}
+		if (mapWidth > 255) {
+			mapWidth = 255;
+		}
+
 
 
 	}

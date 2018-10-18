@@ -6,6 +6,9 @@ TagManager:
   tags:
   - Floor
   - Cube
+  - GenBTN
+  - X
+  - Y
   layers:
   - Default
   - TransparentFX
