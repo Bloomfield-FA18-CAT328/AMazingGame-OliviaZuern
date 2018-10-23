@@ -243,7 +243,7 @@ public class MazeScript
 
 
 	}
-	public void DebugMap() {
+	/*public void DebugMap() {
 
 		for (int y = 0; y < mapHeight; y++) {
 			for (int x = 0; x < mapWidth; x++) {
@@ -256,7 +256,7 @@ public class MazeScript
 		}
 		Debug.Log(mapString);
 
-	}
+	}*/
 
 
 }

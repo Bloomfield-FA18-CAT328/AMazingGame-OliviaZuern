@@ -22,7 +22,8 @@ public class GameControllerScript : MonoBehaviour {
 	private GameObject inputX;
 	private GameObject inputY;
 
-	
+
+	private int cubeCount;
 	//public Button genBtn;
 
 	//private MazeScript maze;
@@ -35,7 +36,7 @@ public class GameControllerScript : MonoBehaviour {
 		
 
 		cam = GameObject.FindGameObjectWithTag("MainCamera");
-		cube = GameObject.FindGameObjectWithTag("Cube");
+	//	cube = GameObject.FindGameObjectWithTag("Cube");
 		
 		floor = GameObject.FindGameObjectWithTag("Floor");
 
@@ -51,11 +52,13 @@ public class GameControllerScript : MonoBehaviour {
 
 		//clear maze
 		GameObject[] cubes = GameObject.FindGameObjectsWithTag("Cube");
-		for (int c = 0; c < cubes.Length-1; c++) {
+		for (int c = 0; c < cubes.Length; c++) {
 			GameObject.Destroy(cubes[c]);
 		}
-		cube = GameObject.FindGameObjectWithTag("Cube");
-		cube.transform.position = new Vector3(3, -1, 3);
+
+		//cube = GameObject.FindGameObjectWithTag("Cube");
+		//cube.transform.position = new Vector3(3, -1, 3);
+		
 		// max limit
 		int w = 0;
 		int h = 0;
@@ -68,6 +71,7 @@ public class GameControllerScript : MonoBehaviour {
 
 		// actually generating maze.
 		maze = new MazeScript(width, height);
+
 		width = maze.mapWidth;
 		height = maze.mapHeight;
 
@@ -75,10 +79,20 @@ public class GameControllerScript : MonoBehaviour {
 		inpY.text = "" + height;
 
 
-		maze.DebugMap();
+		for (int y = 0; y < maze.mapHeight; y++) {
+			for (int x = 0; x < maze.mapWidth; x++) {
+				maze.mapString += maze.mapArray[x, y];
+
+			}
+
+			 maze.mapString += System.Environment.NewLine; //"\n"
+													 //https://stackoverflow.com/questions/12826760/printing-2d-array-in-matrix-format
+		}
+		Debug.Log(maze.mapString);
 
 
-		floor.transform.localScale = new Vector3(maze.mapWidth, 1, maze.mapHeight);
+
+	floor.transform.localScale = new Vector3(maze.mapWidth, 1, maze.mapHeight);
 		floor.transform.position = new Vector3(maze.mapWidth / 2, -0.5f, maze.mapHeight / 2);
 
 		cam.transform.position = new Vector3(maze.mapWidth / 2,20, maze.mapHeight / 2);
@@ -91,14 +105,21 @@ public class GameControllerScript : MonoBehaviour {
 		}
 
 
-
+		cubeCount = 0;
 		for (int y = 0; y < maze.mapHeight; y++) {
 			for (int x = 0; x < maze.mapWidth; x++) {
 				if (maze.mapArray[x,y] != 0) {
 					Instantiate(cube, new Vector3(x, 0.5f, y), Quaternion.identity);
+					cubeCount += 1;
 				}
 
 			}
+		}
+
+		
+		if( cubeCount >= (maze.mapWidth * maze.mapHeight)-5) {
+			RecreateMaze();
+			Debug.Log ("FullMaze Fixed");
 		}
 	}
 
