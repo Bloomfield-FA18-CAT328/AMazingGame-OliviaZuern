@@ -6,6 +6,8 @@ public class MazeScript
 {
 	// using primm's algorythm
 	public byte[,] mapArray; //maze map.
+	//private List<Vector2> wallclear;
+
 	public List<Vector2> wallList;
 	public int wall;
 	public byte mapWidth; //[0, 255]
@@ -45,7 +47,7 @@ public class MazeScript
 		mapArray = new byte[mapWidth, mapHeight];
 		wallList = new List<Vector2>(); //Capacity -- This is a List thing
 
-		
+
 
 		// note: 0=path, 1=wall
 
@@ -55,24 +57,23 @@ public class MazeScript
 				mapArray[x, y] = 2;
 			}
 		}
-		// DebugMap();
+		
 
-		//Random.Range(0f, 100f); //0.0f to 100.0f
-		//Random.Range(0, 100); //0 to 99
+		
 
 		//2)Pick cell, mark as part of maze, add cell walls to list
-		cellX = (byte) Random.Range(1, mapWidth - 1);
-		cellY = (byte) Random.Range(1, mapHeight - 1);
+		cellX = (byte)Random.Range(1, mapWidth - 1);
+		cellY = (byte)Random.Range(1, mapHeight - 1);
 
 		mapArray[cellX, cellY] = 0;
 
-		
+
 		if (cellY >= 1) { wallList.Add(new Vector2(cellX, cellY - 1)); }
 		if (cellY <= mapHeight - 1) { wallList.Add(new Vector2(cellX, cellY + 1)); }
 		if (cellX >= 1) { wallList.Add(new Vector2(cellX - 1, cellY)); }
 		if (cellX <= mapWidth - 1) { wallList.Add(new Vector2(cellX + 1, cellY)); }
 
-		
+
 		//3) while there are 3+ walls on list:
 
 		while (wallList.Count >= 3) {
@@ -82,13 +83,13 @@ public class MazeScript
 
 			wall = Random.Range(0, wallList.Count);
 
-			cellX = (byte) wallList[wall].x;
-			cellY = (byte) wallList[wall].y;
+			cellX = (byte)wallList[wall].x;
+			cellY = (byte)wallList[wall].y;
 			int visited = 0;
 			check = false;
-			 // Check all walls
-			 
-			if ( cellX <= mapWidth - 2 && cellX >= 1) {
+			// Check all walls
+
+			if (cellX <= mapWidth - 2 && cellX >= 1) {
 				if (mapArray[Mathf.FloorToInt(cellX + 1), Mathf.FloorToInt(cellY)] == 0) {
 					visited += 1;
 					if (mapArray[Mathf.FloorToInt(cellX - 1), Mathf.FloorToInt(cellY + 1)] == 0 || mapArray[Mathf.FloorToInt(cellX - 1), Mathf.FloorToInt(cellY - 1)] == 0) {
@@ -96,16 +97,16 @@ public class MazeScript
 					}
 				}
 			}
-			if ( cellX >= 1 && cellX <= mapWidth - 2) {
+			if (cellX >= 1 && cellX <= mapWidth - 2) {
 				if (mapArray[Mathf.FloorToInt(cellX - 1), Mathf.FloorToInt(cellY)] == 0) {
 					visited += 1;
 					if (mapArray[Mathf.FloorToInt(cellX + 1), Mathf.FloorToInt(cellY + 1)] == 0 || mapArray[Mathf.FloorToInt(cellX + 1), Mathf.FloorToInt(cellY - 1)] == 0) {
 						visited += 1;
 					}
-					
+
 				}
 			}
-			if ( cellY >= 1 && cellY <= mapHeight - 2) {
+			if (cellY >= 1 && cellY <= mapHeight - 2) {
 				if (mapArray[Mathf.FloorToInt(cellX), Mathf.FloorToInt(cellY - 1)] == 0) {
 					visited += 1;
 					if (mapArray[Mathf.FloorToInt(cellX + 1), Mathf.FloorToInt(cellY + 1)] == 0 || mapArray[Mathf.FloorToInt(cellX - 1), Mathf.FloorToInt(cellY + 1)] == 0) {
@@ -113,70 +114,23 @@ public class MazeScript
 					}
 				}
 			}
-			if ( cellY <= mapHeight - 2 && cellY >= 1) {
+			if (cellY <= mapHeight - 2 && cellY >= 1) {
 				if (mapArray[Mathf.FloorToInt(cellX), Mathf.FloorToInt(cellY + 1)] == 0) {
 					visited += 1;
-					
+
 					if (mapArray[Mathf.FloorToInt(cellX + 1), Mathf.FloorToInt(cellY - 1)] == 0 || mapArray[Mathf.FloorToInt(cellX - 1), Mathf.FloorToInt(cellY - 1)] == 0) {
 						visited += 1;
 					}
 				}
 			}
 
-			//Backup- no diagonals  
-			/*if (cellX <= mapWidth - 2 && cellX >= 1) {
-				if (mapArray[Mathf.FloorToInt(cellX + 1), Mathf.FloorToInt(cellY)] == 0) { visited += 1; }
-			}
-			if (cellX >= 1 && cellX <= mapWidth - 2) {
-				if (mapArray[Mathf.FloorToInt(cellX - 1), Mathf.FloorToInt(cellY)] == 0) { visited += 1; }
-			}
-			if (cellY >= 1 && cellY <= mapHeight - 2) {
-				if (mapArray[Mathf.FloorToInt(cellX), Mathf.FloorToInt(cellY - 1)] == 0) { visited += 1; }
-			}
-			if (cellY <= mapHeight - 2 && cellY >= 1) {
-				if (mapArray[Mathf.FloorToInt(cellX), Mathf.FloorToInt(cellY + 1)] == 0) { visited += 1; }
-			}*/
-
-			/*	 // Check two sides of wall
-		if (check == false && cellX <= mapWidth - 2 && cellX >= 1) {
-			if (mapArray[cellX + 1, cellY] == 0 && mapArray[cellX - 1, cellY] != 0) {
-				check = true;
-				mapArray[cellX, cellY] = 0;
-				mapArray[cellX - 1, cellY] = 1;
-			}
-		}
-		if (check == false && cellX >= 1 && cellX <= mapWidth - 2) {
-				if (mapArray[cellX - 1, cellY] == 0 && mapArray[cellX + 1, cellY] != 0) {
-					check = true;
-					mapArray[cellX, cellY] = 0;
-					mapArray[cellX + 1, cellY] = 1;
-				}
-		}
-		if (check == false && cellY >= 1 && cellY <= mapHeight - 2) {
-				if (mapArray[cellX, cellY - 1] == 0 && mapArray[cellX, cellY + 1] != 0) {
-					check = true;
-					mapArray[cellX, cellY] = 0;
-					mapArray[cellX, cellY + 1] = 1;
-				}
-		}
-		if (check == false && cellY <= mapHeight - 2 && cellY >= 1) 
-			if (mapArray[cellX, cellY + 1] == 0 && mapArray[cellX, cellY - 1] != 0) {
-				check = true;
-				mapArray[cellX, cellY] = 0;
-				mapArray[cellX, cellY - 1] = 1;
-			}*/
-
-			//  if (mapArray[Mathf.FloorToInt(cellX + 1), Mathf.FloorToInt(cellY)] == 0) { visited += 1; }
-			//  if (mapArray[Mathf.FloorToInt(cellX - 1), Mathf.FloorToInt(cellY)] == 0) { visited += 1; }
-			//  if (mapArray[Mathf.FloorToInt(cellX), Mathf.FloorToInt(cellY - 1)] == 0) { visited += 1; }
-			//  if (mapArray[Mathf.FloorToInt(cellX), Mathf.FloorToInt(cellY + 1)] == 0) { visited += 1; }
-
+			
 
 			if (visited == 1) {
-			//if (check == true) {
-			mapArray[Mathf.FloorToInt(cellX), Mathf.FloorToInt(cellY)] = 0;
+				//if (check == true) {
+				mapArray[Mathf.FloorToInt(cellX), Mathf.FloorToInt(cellY)] = 0;
 
-			
+
 				if (cellX <= mapWidth - 2) {
 					if (mapArray[cellX + 1, cellY] == 2) { wallList.Add(new Vector2(cellX + 1, cellY)); }
 				}
@@ -195,7 +149,7 @@ public class MazeScript
 
 
 				if (cellX <= mapWidth - 2) {
-					if (mapArray[Mathf.FloorToInt(cellX + 1), Mathf.FloorToInt(cellY)] ==2) { mapArray[Mathf.FloorToInt(cellX + 1), Mathf.FloorToInt(cellY)] = 1; }
+					if (mapArray[Mathf.FloorToInt(cellX + 1), Mathf.FloorToInt(cellY)] == 2) { mapArray[Mathf.FloorToInt(cellX + 1), Mathf.FloorToInt(cellY)] = 1; }
 				}
 				if (cellX >= 1) {
 					if (mapArray[Mathf.FloorToInt(cellX - 1), Mathf.FloorToInt(cellY)] == 2) { mapArray[Mathf.FloorToInt(cellX - 1), Mathf.FloorToInt(cellY)] = 1; }
@@ -206,15 +160,15 @@ public class MazeScript
 				if (cellY <= mapHeight - 2) {
 					if (mapArray[Mathf.FloorToInt(cellX), Mathf.FloorToInt(cellY + 1)] == 2) { mapArray[Mathf.FloorToInt(cellX), Mathf.FloorToInt(cellY + 1)] = 1; }
 				}
-		
 
-			// add neighboring walls of cell to list
-			
-				
+
+				// add neighboring walls of cell to list
+
+
 			}
 
 
-		
+
 
 
 			// remove wall from list
@@ -238,25 +192,46 @@ public class MazeScript
 		if (mapWidth < 7) {
 			mapWidth = 7;
 		}
-		
+
 
 
 
 	}
-	/*public void DebugMap() {
 
-		for (int y = 0; y < mapHeight; y++) {
-			for (int x = 0; x < mapWidth; x++) {
-				mapString += mapArray[x, y];
-			
-			}
-
-			mapString += System.Environment.NewLine; //"\n"
-			//https://stackoverflow.com/questions/12826760/printing-2d-array-in-matrix-format
+	public bool WallCheck (byte dirX, byte dirY){
+		//Debug.Log(dirX + " " + dirY + " " + mapArray[dirX, dirY]);
+		if (mapArray[dirX,dirY]== 0) {
+			return (true);
+		}else {
+			return (false);
 		}
-		Debug.Log(mapString);
+		
+		}
 
+	/*public void WallRemove()
+	{
+		// removes a few walls here and there. 
+		wallclear = new List<Vector2>();
+		for (int y = 1; y < mapHeight - 1; y++) {
+			for (int x = 1; x < mapWidth - 1; x++) {
+				if (mapArray[x, y] != 0) {
+					wallclear.Insert(0,new Vector2(x, y));
+				}
+			}
+		}
+		int toClear = (int) (Mathf.Sqrt(mapHeight-2)+ Mathf.Sqrt(mapWidth-2));
+		Debug.Log(toClear + "," + wallList.Count);
+		while (toClear > 0 && wallclear.Count > 0) {
+			int w = (int)Random.Range(0, wallclear.Count);
+			cellX = (byte)wallclear[w].x;
+			cellY = (byte)wallclear[w].y;
+			if ((mapArray[cellX + 1, cellY] == 0 && mapArray[cellX - 1, cellY] == 0) || (mapArray[cellX, cellY + 1] == 0 && mapArray[cellX, cellY - 1] == 0)) {
+				mapArray[cellX, cellY] = 0;
+				toClear -= 1;
+				Debug.Log("X");
+			}
+			wallclear.RemoveAt(w);
+		}
 	}*/
-
 
 }
