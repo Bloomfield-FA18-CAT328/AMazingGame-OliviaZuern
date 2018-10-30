@@ -23,6 +23,7 @@ public class GameControllerScript : MonoBehaviour {
 	private GameObject inputY;
 
 	public GameObject Player;
+	public GameObject[] Enemy;
 	private int cubeCount;
 	//public Button genBtn;
 
@@ -99,8 +100,7 @@ public class GameControllerScript : MonoBehaviour {
 		floor.transform.position = new Vector3(maze.mapWidth / 2, -0.5f, -maze.mapHeight / 2);
 
 		cam.transform.position = new Vector3(maze.mapWidth / 2, 20, -maze.mapHeight / 2);
-		//cam.transform.position = new Vector3(maze.mapWidth / 2, maze.mapHeight, ((maze.mapHeight / 2) - (maze.mapHeight*(Mathf.Tan(15*Mathf.Deg2Rad)*Mathf.Rad2Deg)) ) );
-		//cam.transform.position = new Vector3(maze.mapWidth / 2, maze.mapHeight, ((maze.mapHeight / 2) - (maze.mapHeight/5) ));
+		
 		if (maze.mapHeight > maze.mapWidth) {
 			cam.GetComponent<Camera>().orthographicSize = (maze.mapHeight / 2) + 1;
 		} else {
@@ -126,6 +126,25 @@ public class GameControllerScript : MonoBehaviour {
 		}
 		SpawnPlayer();
 
+		GameObject[] plist = GameObject.FindGameObjectsWithTag("Enemy");
+		for (int c = 0; c < plist.Length; c++) {
+			GameObject.Destroy(plist[c]);
+		}
+
+		for (int e = 1; e < Enemy.Length; e++) {
+			SpawnEnemy(e);
+		}
+
+		//reset spawn markers
+		for (int y = 0; y < maze.mapHeight; y++) {
+			for (int x = 0; x < maze.mapWidth; x++) {
+				if (maze.mapArray[x, y] == 3) {
+					maze.mapArray[x, y] = 0;
+				}
+
+			}
+		}
+
 	}
 	private void SpawnPlayer()
 	{
@@ -140,7 +159,20 @@ public class GameControllerScript : MonoBehaviour {
 		if (maze.mapArray[spawnX, spawnY] == 0) {
 		//	Debug.Log(""+spawnX+ spawnY);
 			Instantiate(Player, new Vector3(spawnX, 0.5f, -spawnY), Quaternion.identity);
+			maze.mapArray[spawnX, spawnY] = 3;
 		} else { SpawnPlayer(); }
+	}
+
+	private void SpawnEnemy(int e)
+	{
+		Debug.Log(e);
+		byte spawnX = (byte)Mathf.FloorToInt(Random.Range(1, maze.mapWidth));
+		byte spawnY = (byte)Mathf.FloorToInt(Random.Range(1, maze.mapHeight));
+
+		if (maze.mapArray[spawnX, spawnY] == 0) {
+			Instantiate(Enemy[e], new Vector3(spawnX, 0.5f, -spawnY), Quaternion.identity);
+			maze.mapArray[spawnX, spawnY] = 3;
+		} else { SpawnEnemy(e); }
 	}
 
 
@@ -156,7 +188,7 @@ public class GameControllerScript : MonoBehaviour {
 			}
 		}
 		int toClear = (int)((Mathf.Sqrt(maze.mapHeight - 2) * Mathf.Sqrt(maze.mapWidth - 2))/1.75f);
-		Debug.Log(toClear + "," + wallclear.Count);
+		
 		while (toClear > 0 && wallclear.Count > 0) {
 			int w = (int)Random.Range(0, wallclear.Count);
 			byte cellX = (byte)wallclear[w].x;
@@ -164,7 +196,7 @@ public class GameControllerScript : MonoBehaviour {
 			if ((maze.mapArray[cellX + 1, cellY] == 0 && maze.mapArray[cellX - 1, cellY] == 0 && maze.mapArray[cellX, cellY + 1] != 0 && maze.mapArray[cellX, cellY - 1] != 0) || (maze.mapArray[cellX, cellY + 1] == 0 && maze.mapArray[cellX, cellY - 1] == 0 && maze.mapArray[cellX + 1, cellY] != 0 && maze.mapArray[cellX - 1, cellY] != 0)) {
 				maze.mapArray[cellX, cellY] = 0;
 				toClear -= 1;
-				Debug.Log("X");
+				
 			}
 			wallclear.RemoveAt(w);
 		}

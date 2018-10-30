@@ -2,34 +2,37 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class MoveScript : MonoBehaviour {
+public class EnemyMoveScript : MonoBehaviour {
 
 	//current tile location.
-	public int tileX;
-	public int tileY;
+	private int tileX;
+	private int tileY;
 
 	public int mazeY;
-//	public int mazeX;
+	//	public int mazeX;
 
 	private int direction;
 	// 0=up, 1=r, 2=down, 3=l
 
-		// same as above, but 5 = no input. 
-	private int keyInput;
+	// same as above, but 5 = no input. 
+	public int keyInput;
 
 
-	private bool isMoving = false;
+	public bool isMoving = false;
 	// is it moving?
 
-	private bool aligned;
+	public bool aligned;
 	// is aligned to grid? (this is for conviniance, mostly)
 
 	private MazeScript map;
 
 	private int step;
-	void Start () {
+
+	void Start()
+	{
+		keyInput = 5;
 		map = GameObject.FindGameObjectWithTag("GameController").GetComponent<GameControllerScript>().maze;
-		// pick random tile, spawn player. or add this to maze gen. 
+		
 		mazeY = map.mapHeight;
 		InvokeRepeating("Move", 0, 0.1f);
 	}
@@ -48,19 +51,7 @@ public class MoveScript : MonoBehaviour {
 			aligned = false;
 		}
 
-		// input value
-		if (Input.GetAxisRaw("Horizontal") != 0 && Input.GetAxisRaw("Vertical") == 0) {
-			//keyInput = 2 + Mathf.RoundToInt(Input.GetAxis("Horizontal"));
-			if(Input.GetAxisRaw("Horizontal") == 1) { keyInput = 3; } else { keyInput = 1; }
-		}
-		if (Input.GetAxisRaw("Horizontal") == 0 && Input.GetAxisRaw("Vertical") != 0) {
-			//keyInput = 1 + Mathf.RoundToInt(Input.GetAxis("Vertical"));
-			if (Input.GetAxisRaw("Vertical") == 1) { keyInput = 0; } else { keyInput = 2; }
-		}
-		if (Input.GetAxisRaw("Horizontal") == 0 && Input.GetAxisRaw("Vertical") == 0) {
-			keyInput = 5;
-		}
-
+		
 
 		// if is aligned and axys = 0, set not moving.
 		if (aligned && keyInput == 5) {
@@ -70,32 +61,12 @@ public class MoveScript : MonoBehaviour {
 		//if is aligned and axys isn't 0 check walls in that direction.
 		// if no walls, set direction. move = true. 
 		if (aligned && keyInput != 5) {
-			byte dirX = (byte)tileX;
-			byte dirY = (byte)tileY;
-			switch (keyInput) {
-				case 0:
-					dirY += 1;
-					break;
-				case 1:
-					dirX += 1;
-					break;
-				case 2:
-					dirY -= 1;
-					break;
-				case 3:
-					dirX -= 1;
-					break;
-			}
-			if (map.WallCheck(dirX, dirY) == true) {
-				isMoving = true;
-				direction = keyInput;
-			}
-			//if(map.WallCheck(keyInput, tileX, tileY)) {
-
+			TileCheck();
 		}
 	}
 	// Update is called once per frame
-	void Move () {
+	void Move()
+	{
 
 		// if is moving,  
 
@@ -130,12 +101,34 @@ public class MoveScript : MonoBehaviour {
 				step = 0;
 				isMoving = false;
 				gameObject.transform.position = new Vector3(Mathf.Round(gameObject.transform.position.x), 0.5f, Mathf.Round(gameObject.transform.position.z));
+			
+				isMoving = false;
 			}
 		} else { step = 0; }
 	}
 
-	private void MovePlayer()
-	{
-		
+	public void TileCheck() {
+		byte dirX = (byte)tileX;
+		byte dirY = (byte)tileY;
+		switch (keyInput) {
+			case 0:
+				dirY += 1;
+				break;
+			case 1:
+				dirX += 1;
+				break;
+			case 2:
+				dirY -= 1;
+				break;
+			case 3:
+				dirX -= 1;
+				break;
+		}
+		if (map.WallCheck(dirX, dirY) == true) {
+			isMoving = true;
+			direction = keyInput;
+		}
+
 	}
 }
+

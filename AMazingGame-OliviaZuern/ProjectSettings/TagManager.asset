@@ -9,6 +9,7 @@ TagManager:
   - GenBTN
   - X
   - Y
+  - Enemy
   layers:
   - Default
   - TransparentFX
