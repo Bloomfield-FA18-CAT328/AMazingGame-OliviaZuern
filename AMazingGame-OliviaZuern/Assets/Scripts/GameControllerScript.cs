@@ -35,7 +35,9 @@ public class GameControllerScript : MonoBehaviour {
 	//private MazeScript maze;
 	// Use this for initialization
 	void Start () {
+		if (tS <= 0){ tS = 1; } // programmer stupidity check.
 		Time.timeScale = tS;
+
 		if (IsUI) {
 			Button genBtn = GameObject.FindGameObjectWithTag("GenBTN").GetComponent<Button>();
 			genBtn.onClick.AddListener(RecreateMaze);
