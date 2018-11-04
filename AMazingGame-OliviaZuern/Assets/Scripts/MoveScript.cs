@@ -27,6 +27,8 @@ public class MoveScript : MonoBehaviour {
 	private MazeScript map;
 
 	private int step;
+
+	private int Stuckfix;
 	void Start () {
 		map = GameObject.FindGameObjectWithTag("GameController").GetComponent<GameControllerScript>().maze;
 		// pick random tile, spawn player. or add this to maze gen. 
@@ -134,8 +136,4 @@ public class MoveScript : MonoBehaviour {
 		} else { step = 0; }
 	}
 
-	private void MovePlayer()
-	{
-		
-	}
 }

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 //For MonoBehaviours AND all other serialized things (ScriptableObjects, Editors, etc.) 
 //DONT use the constructor!!! Use Awake, Start, or OnEnable
 public class GameControllerScript : MonoBehaviour {
@@ -9,11 +10,14 @@ public class GameControllerScript : MonoBehaviour {
 	//All simple types are serializable, as well as all of Unity's types or [System.Serializable]
 	//Null is not supported by serialization in Unity
 	public MazeScript maze;
+	public int tS;
 
 	public GameObject cube;
 	
-	[SerializeField] private byte width = 5;
-	[SerializeField] private byte height = 10;
+	[SerializeField] private byte width = 25;
+	[SerializeField] private byte height = 25;
+	public bool SpawnEnemies;
+	public bool IsUI;
 
 	private GameObject cam;
 	private GameObject floor;
@@ -31,9 +35,11 @@ public class GameControllerScript : MonoBehaviour {
 	//private MazeScript maze;
 	// Use this for initialization
 	void Start () {
-	
-		Button genBtn = GameObject.FindGameObjectWithTag("GenBTN").GetComponent<Button>();
-		genBtn.onClick.AddListener(RecreateMaze);
+		Time.timeScale = tS;
+		if (IsUI) {
+			Button genBtn = GameObject.FindGameObjectWithTag("GenBTN").GetComponent<Button>();
+			genBtn.onClick.AddListener(RecreateMaze);
+		}
 		
 		
 
@@ -46,12 +52,22 @@ public class GameControllerScript : MonoBehaviour {
 		//maze.MazeGen();
 		RecreateMaze();
 	}
-	
+	private void Update()
+	{
+		if(Input.GetKeyDown("1")) { SpawnEnemy(1); }
+		if (Input.GetKeyDown("2")) { SpawnEnemy(2); }
+		if (Input.GetKeyDown(KeyCode.F1)) { RecreateMaze(); }
+		if (Input.GetKeyDown(KeyCode.Tab)) {
+			int s = SceneManager.GetActiveScene().buildIndex + 1;
+			if(s> SceneManager.sceneCount) { s = 0; }
+			SceneManager.LoadScene(s);
+		}
+	}
+
 	private void RecreateMaze()
 	{
 		Destroy(GameObject.FindGameObjectWithTag("Player"));
-		InputField inpX = GameObject.FindGameObjectWithTag("X").GetComponent<InputField>();
-		InputField inpY = GameObject.FindGameObjectWithTag("Y").GetComponent<InputField>();
+		
 
 		//clear maze
 		GameObject[] cubes = GameObject.FindGameObjectsWithTag("Cube");
@@ -61,28 +77,46 @@ public class GameControllerScript : MonoBehaviour {
 
 		//cube = GameObject.FindGameObjectWithTag("Cube");
 		//cube.transform.position = new Vector3(3, -1, 3);
-		
+
 		// max limit
-		int w = 0;
-		int h = 0;
-		int.TryParse(inpX.text, out w);
-		int.TryParse(inpY.text, out h);
-		if (w > 255) { w = 255; }
-		if (h > 255) { h = 255; }
-		width = (byte)w;
-		height = (byte)h;
+		if (IsUI) {
+			InputField inpX = GameObject.FindGameObjectWithTag("X").GetComponent<InputField>();
+			InputField inpY = GameObject.FindGameObjectWithTag("Y").GetComponent<InputField>();
+			int w = 0;
+			int h = 0;
+			int.TryParse(inpX.text, out w);
+			int.TryParse(inpY.text, out h);
+			if (w > 255) { w = 255; }
+			if (h > 255) { h = 255; }
+			width = (byte)w;
+			height = (byte)h;
 
-	
-		// actually generating maze.
-		maze = new MazeScript(width, height);
-		WallRemove();
-		
-		width = maze.mapWidth;
-		height = maze.mapHeight;
+			maze = new MazeScript(width, height);
+			WallRemove();
 
-		inpX.text = "" + width;
-		inpY.text = "" + height;
+			width = maze.mapWidth;
+			height = maze.mapHeight;
 
+
+			inpX.text = "" + width;
+			inpY.text = "" + height;
+
+		} else {
+			int w = width;
+			int h = height;
+			if (w > 255) { w = 255; }
+			if (h > 255) { h = 255; }
+			width = (byte)w;
+			height = (byte)h;
+
+
+			// actually generating maze.
+			maze = new MazeScript(width, height);
+			WallRemove();
+
+			width = maze.mapWidth;
+			height = maze.mapHeight;
+		}
 
 		for (int y = 0; y < maze.mapHeight; y++) {
 			for (int x = 0; x < maze.mapWidth; x++) {
@@ -130,9 +164,10 @@ public class GameControllerScript : MonoBehaviour {
 		for (int c = 0; c < plist.Length; c++) {
 			GameObject.Destroy(plist[c]);
 		}
-
-		for (int e = 1; e < Enemy.Length; e++) {
-			SpawnEnemy(e);
+		if (SpawnEnemies == true) {
+			for (int e = 1; e < Enemy.Length; e++) {
+				SpawnEnemy(e);
+			}
 		}
 
 		//reset spawn markers
@@ -165,7 +200,7 @@ public class GameControllerScript : MonoBehaviour {
 
 	private void SpawnEnemy(int e)
 	{
-		Debug.Log(e);
+		
 		byte spawnX = (byte)Mathf.FloorToInt(Random.Range(1, maze.mapWidth));
 		byte spawnY = (byte)Mathf.FloorToInt(Random.Range(1, maze.mapHeight));
 

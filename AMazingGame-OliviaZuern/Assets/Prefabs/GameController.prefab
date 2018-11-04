@@ -51,6 +51,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9db2dbbb0f0e508489d909e9dd791112, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  cube: {fileID: 0}
-  width: 20
-  height: 20
+  cube: {fileID: 1084538048634564, guid: 4fa4b262b33fae84b9a6a7dba692188b, type: 2}
+  width: 25
+  height: 25
+  SpawnEnemies: 1
+  IsUI: 1
+  Player: {fileID: 1652862937795066, guid: 0dd837ac516c02b459d3344988628286, type: 2}
+  Enemy:
+  - {fileID: 0}
+  - {fileID: 1750966914754772, guid: e5f2a4567dafe0d4b98f523383491078, type: 2}
+  - {fileID: 1867270927085798, guid: 31691b3c594793441b62126950eb6335, type: 2}

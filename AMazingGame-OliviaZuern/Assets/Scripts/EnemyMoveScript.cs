@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class EnemyMoveScript : MonoBehaviour {
+	private DirectionDebugScript draw;
 
 	//current tile location.
 	private int tileX;
@@ -11,7 +12,7 @@ public class EnemyMoveScript : MonoBehaviour {
 	public int mazeY;
 	//	public int mazeX;
 
-	private int direction;
+	public int direction;
 	// 0=up, 1=r, 2=down, 3=l
 
 	// same as above, but 5 = no input. 
@@ -27,9 +28,11 @@ public class EnemyMoveScript : MonoBehaviour {
 	private MazeScript map;
 
 	private int step;
+	private Vector2 prevPos;
 
 	void Start()
 	{
+		draw = gameObject.GetComponent<DirectionDebugScript>();
 		keyInput = 5;
 		map = GameObject.FindGameObjectWithTag("GameController").GetComponent<GameControllerScript>().maze;
 		
@@ -67,10 +70,15 @@ public class EnemyMoveScript : MonoBehaviour {
 	// Update is called once per frame
 	void Move()
 	{
+		if(prevPos == new Vector2(gameObject.transform.position.x, gameObject.transform.position.z)) {
+			isMoving = true;
+		}
 
 		// if is moving,  
 
 		if (isMoving == true) {
+			draw.x = direction;
+			prevPos = new Vector2(gameObject.transform.position.x, gameObject.transform.position.z);
 			step += 1;
 			switch (direction) {
 				case 0:
@@ -97,6 +105,7 @@ public class EnemyMoveScript : MonoBehaviour {
 
 					break;
 			}
+			
 			if (step == 5) {
 				step = 0;
 				isMoving = false;
@@ -104,7 +113,10 @@ public class EnemyMoveScript : MonoBehaviour {
 			
 				isMoving = false;
 			}
-		} else { step = 0; }
+		} else {
+			step = 0;
+			prevPos = new Vector2(gameObject.transform.position.x, gameObject.transform.position.z);
+		}
 	}
 
 	public void TileCheck() {

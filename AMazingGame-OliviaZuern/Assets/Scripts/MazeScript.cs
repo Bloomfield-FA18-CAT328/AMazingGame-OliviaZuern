@@ -200,7 +200,7 @@ public class MazeScript
 
 	public bool WallCheck (byte dirX, byte dirY){
 		//Debug.Log(dirX + " " + dirY + " " + mapArray[dirX, dirY]);
-		if (mapArray[dirX,dirY]== 0) {
+		if (mapArray[dirX,dirY]== 0 || mapArray[dirX, dirY] == 3) {
 			return (true);
 		}else {
 			return (false);
