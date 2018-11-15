@@ -51,6 +51,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9db2dbbb0f0e508489d909e9dd791112, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  tS: 2
   cube: {fileID: 1084538048634564, guid: 4fa4b262b33fae84b9a6a7dba692188b, type: 2}
   width: 25
   height: 25
@@ -61,3 +62,13 @@ MonoBehaviour:
   - {fileID: 0}
   - {fileID: 1750966914754772, guid: e5f2a4567dafe0d4b98f523383491078, type: 2}
   - {fileID: 1867270927085798, guid: 31691b3c594793441b62126950eb6335, type: 2}
+  - {fileID: 1455409291044640, guid: 7f750b92722305e41b4a39bb853dc836, type: 2}
+  playerPos: {x: 0, y: 0}
+  enemyPos:
+  - {x: 0, y: 0}
+  - {x: 0, y: 0}
+  - {x: 0, y: 0}
+  - {x: 0, y: 0}
+  - {x: 0, y: 0}
+  - {x: 0, y: 0}
+  enemyCount: 0

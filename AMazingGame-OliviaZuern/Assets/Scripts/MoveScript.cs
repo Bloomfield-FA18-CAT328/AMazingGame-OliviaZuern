@@ -25,11 +25,13 @@ public class MoveScript : MonoBehaviour {
 	// is aligned to grid? (this is for conviniance, mostly)
 
 	private MazeScript map;
+	private GameControllerScript gM;
 
 	private int step;
 
 	private int Stuckfix;
 	void Start () {
+		gM = GameObject.FindGameObjectWithTag("GameController").GetComponent<GameControllerScript>();
 		map = GameObject.FindGameObjectWithTag("GameController").GetComponent<GameControllerScript>().maze;
 		// pick random tile, spawn player. or add this to maze gen. 
 		mazeY = map.mapHeight;
@@ -37,11 +39,15 @@ public class MoveScript : MonoBehaviour {
 	}
 	void Update()
 	{
+		for (int e = 0; e < gM.enemyPos.Length; e++) {
+			if (gM.enemyPos[e] == gM.playerPos) { gM.RecreateMaze(); } 
+		}
 		// state / direction changer. check if aligned. X
 
 		// set tile x and y. this is the current tile. 
 		tileX = Mathf.RoundToInt(gameObject.transform.position.x);
 		tileY = Mathf.Abs(Mathf.RoundToInt(gameObject.transform.position.z));
+		gM.playerPos = new Vector2(tileX, tileY);
 
 		//is aligned to grid
 		if (gameObject.transform.position.x == Mathf.Floor(gameObject.transform.position.x) && gameObject.transform.position.z == Mathf.Floor(gameObject.transform.position.z)) {
@@ -49,6 +55,7 @@ public class MoveScript : MonoBehaviour {
 		} else {
 			aligned = false;
 		}
+		
 
 		// input value
 		if (Input.GetAxisRaw("Horizontal") != 0 && Input.GetAxisRaw("Vertical") == 0) {

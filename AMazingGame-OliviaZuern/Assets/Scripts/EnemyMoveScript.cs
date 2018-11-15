@@ -6,8 +6,8 @@ public class EnemyMoveScript : MonoBehaviour {
 	private DirectionDebugScript draw;
 
 	//current tile location.
-	private int tileX;
-	private int tileY;
+	public int tileX;
+	public int tileY;
 
 	public int mazeY;
 	//	public int mazeX;
@@ -26,12 +26,18 @@ public class EnemyMoveScript : MonoBehaviour {
 	// is aligned to grid? (this is for conviniance, mostly)
 
 	private MazeScript map;
+	public GameControllerScript gM;
 
 	private int step;
 	private Vector2 prevPos;
+	public int enemyID;
+
+	public bool aS = false;
 
 	void Start()
 	{
+		gM = GameObject.FindGameObjectWithTag("GameController").GetComponent<GameControllerScript>();
+		enemyID = gM.enemyCount;
 		draw = gameObject.GetComponent<DirectionDebugScript>();
 		keyInput = 5;
 		map = GameObject.FindGameObjectWithTag("GameController").GetComponent<GameControllerScript>().maze;
@@ -46,6 +52,7 @@ public class EnemyMoveScript : MonoBehaviour {
 		// set tile x and y. this is the current tile. 
 		tileX = Mathf.RoundToInt(gameObject.transform.position.x);
 		tileY = Mathf.Abs(Mathf.RoundToInt(gameObject.transform.position.z));
+		
 
 		//is aligned to grid
 		if (gameObject.transform.position.x == Mathf.Floor(gameObject.transform.position.x) && gameObject.transform.position.z == Mathf.Floor(gameObject.transform.position.z)) {
@@ -77,6 +84,7 @@ public class EnemyMoveScript : MonoBehaviour {
 		// if is moving,  
 
 		if (isMoving == true) {
+			gM.enemyPos[enemyID] = new Vector2(tileX, tileY);
 			draw.x = direction;
 			prevPos = new Vector2(gameObject.transform.position.x, gameObject.transform.position.z);
 			step += 1;
@@ -105,14 +113,19 @@ public class EnemyMoveScript : MonoBehaviour {
 
 					break;
 			}
+
 			
+
 			if (step == 5) {
 				step = 0;
 				isMoving = false;
 				gameObject.transform.position = new Vector3(Mathf.Round(gameObject.transform.position.x), 0.5f, Mathf.Round(gameObject.transform.position.z));
 			
 				isMoving = false;
+
+				if (aS == true) { gameObject.GetComponent<AStarAI>().NextDirection(); }
 			}
+
 		} else {
 			step = 0;
 			prevPos = new Vector2(gameObject.transform.position.x, gameObject.transform.position.z);

@@ -29,7 +29,10 @@ public class GameControllerScript : MonoBehaviour {
 	public GameObject Player;
 	public GameObject[] Enemy;
 	private int cubeCount;
-	//public Button genBtn;
+
+	public Vector2 playerPos;
+	public Vector2[] enemyPos;
+	public int enemyCount;
 
 	private List<Vector2> wallclear;
 	//private MazeScript maze;
@@ -46,18 +49,17 @@ public class GameControllerScript : MonoBehaviour {
 		
 
 		cam = GameObject.FindGameObjectWithTag("MainCamera");
-	//	cube = GameObject.FindGameObjectWithTag("Cube");
-		
-		floor = GameObject.FindGameObjectWithTag("Floor");
 
-		// maze =  GetComponent<MazeScript>();
-		//maze.MazeGen();
+		floor = GameObject.FindGameObjectWithTag("Floor");
 		RecreateMaze();
 	}
 	private void Update()
 	{
-		if(Input.GetKeyDown("1")) { SpawnEnemy(1); }
+		
+
+		if (Input.GetKeyDown("1")) { SpawnEnemy(1); }
 		if (Input.GetKeyDown("2")) { SpawnEnemy(2); }
+		if (Input.GetKeyDown("3")) { SpawnEnemy(3); }
 		if (Input.GetKeyDown(KeyCode.F1)) { RecreateMaze(); }
 		if (Input.GetKeyDown(KeyCode.Tab)) {
 			int s = SceneManager.GetActiveScene().buildIndex + 1;
@@ -66,10 +68,10 @@ public class GameControllerScript : MonoBehaviour {
 		}
 	}
 
-	private void RecreateMaze()
+	public void RecreateMaze()
 	{
 		Destroy(GameObject.FindGameObjectWithTag("Player"));
-		
+		enemyCount = 0;
 
 		//clear maze
 		GameObject[] cubes = GameObject.FindGameObjectsWithTag("Cube");
@@ -77,8 +79,7 @@ public class GameControllerScript : MonoBehaviour {
 			GameObject.Destroy(cubes[c]);
 		}
 
-		//cube = GameObject.FindGameObjectWithTag("Cube");
-		//cube.transform.position = new Vector3(3, -1, 3);
+		
 
 		// max limit
 		if (IsUI) {
@@ -126,7 +127,7 @@ public class GameControllerScript : MonoBehaviour {
 			}
 
 			 maze.mapString += System.Environment.NewLine; //"\n"
-													 //https://stackoverflow.com/questions/12826760/printing-2d-array-in-matrix-format
+			//https://stackoverflow.com/questions/12826760/printing-2d-array-in-matrix-format
 		}
 		Debug.Log(maze.mapString);
 
@@ -194,7 +195,6 @@ public class GameControllerScript : MonoBehaviour {
 		byte spawnY = (byte) Mathf.FloorToInt( Random.Range(1, maze.mapHeight));
 		
 		if (maze.mapArray[spawnX, spawnY] == 0) {
-		//	Debug.Log(""+spawnX+ spawnY);
 			Instantiate(Player, new Vector3(spawnX, 0.5f, -spawnY), Quaternion.identity);
 			maze.mapArray[spawnX, spawnY] = 3;
 		} else { SpawnPlayer(); }
@@ -202,14 +202,16 @@ public class GameControllerScript : MonoBehaviour {
 
 	private void SpawnEnemy(int e)
 	{
-		
-		byte spawnX = (byte)Mathf.FloorToInt(Random.Range(1, maze.mapWidth));
-		byte spawnY = (byte)Mathf.FloorToInt(Random.Range(1, maze.mapHeight));
+		if (enemyCount < 5) {
+			byte spawnX = (byte)Mathf.FloorToInt(Random.Range(1, maze.mapWidth));
+			byte spawnY = (byte)Mathf.FloorToInt(Random.Range(1, maze.mapHeight));
 
-		if (maze.mapArray[spawnX, spawnY] == 0) {
-			Instantiate(Enemy[e], new Vector3(spawnX, 0.5f, -spawnY), Quaternion.identity);
-			maze.mapArray[spawnX, spawnY] = 3;
-		} else { SpawnEnemy(e); }
+			if (maze.mapArray[spawnX, spawnY] == 0) {
+				Instantiate(Enemy[e], new Vector3(spawnX, 0.5f, -spawnY), Quaternion.identity);
+				maze.mapArray[spawnX, spawnY] = 3;
+				enemyCount += 1;
+			} else { SpawnEnemy(e); }
+		}
 	}
 
 
@@ -237,6 +239,11 @@ public class GameControllerScript : MonoBehaviour {
 			}
 			wallclear.RemoveAt(w);
 		}
+	}
+
+	private void DeathCheck(){
+		
+	
 	}
 
 }
