@@ -39,9 +39,9 @@ GameObject:
   - component: {fileID: 4208123985404158}
   - component: {fileID: 33022610469101236}
   - component: {fileID: 23429364406232750}
-  - component: {fileID: 114820267890027000}
-  - component: {fileID: 114154869186272932}
   - component: {fileID: 114974709780656168}
+  - component: {fileID: 114154869186272932}
+  - component: {fileID: 114820267890027000}
   m_Layer: 0
   m_Name: AStarAI
   m_TagString: Enemy
@@ -172,7 +172,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   col: {r: 0, g: 0.96039844, b: 1, a: 0}
-  prefabNode: {fileID: 1810199631303318, guid: b5b3e5fc9ab1f024d850b738c2e92a98, type: 2}
   pathNodes: []
 --- !u!114 &114820267890027000
 MonoBehaviour:

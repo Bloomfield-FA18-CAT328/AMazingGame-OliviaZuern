@@ -4,10 +4,12 @@ using UnityEngine;
 
 public class AStarAI : MonoBehaviour {
 	public Color col;
-	public GameObject prefabNode;
+	//public GameObject prefabNode;
 
-	private EnemyMoveScript mover;
 	private MazeScript maze;
+	private EnemyMoveScript mover;
+	private GameControllerScript gM;
+	
 
 	private byte targetX;
 	private byte targetY;
@@ -31,45 +33,53 @@ public class AStarAI : MonoBehaviour {
 	public List<Vector2> pathNodes;
 
 	private List<Vector2Int> dirCheck;
+	private bool found;
 	void Start () {
 		mover = gameObject.GetComponent<EnemyMoveScript>();
-		mover.aS = true;
-		maze = GameObject.FindGameObjectWithTag("GameController").GetComponent<GameControllerScript>().maze;
+		gM = GameObject.FindGameObjectWithTag("GameController").GetComponent<GameControllerScript>();
+	//	mover.aS = true;
+		maze = gM.maze;
 
 		//Calc path to player. 
 		//InvokeRepeating("AStar", 0, 0.5f);
-		AStar();
+		
 		dirCheck = new List<Vector2Int>();
 		dirCheck.Add(new Vector2Int(0, 1));
-		dirCheck.Add(new Vector2Int(0, -1));
-		dirCheck.Add(new Vector2Int(-1, 0));
 		dirCheck.Add(new Vector2Int(1, 0));
+		dirCheck.Add(new Vector2Int(0,-1));
+		dirCheck.Add(new Vector2Int(-1,0));
 
+		mover.direction = 7;
+		AStar();
 	}
 
 
 
 	private void AStar(){ // calc new path
-		
+		found = false;
 			open = new List<NodeScript>();
 			openXY = new List<Vector2>();
 			closed = new List<Vector2>();
 			nodeMap = new NodeScript[maze.mapWidth, maze.mapHeight];
-			targetX = (byte) mover.gM.playerPos.x;
-			targetY = (byte)mover.gM.playerPos.y;
+			targetX = (byte) gM.playerPos.x;
+			targetY = (byte) gM.playerPos.y;
 
+		int hereX = Mathf.RoundToInt(gameObject.transform.position.x);
+		int hereY = Mathf.Abs(Mathf.RoundToInt(gameObject.transform.position.z));
+		int miscH = (int)((Mathf.Pow(Mathf.Abs(targetX - hereX), 2f)) + (Mathf.Pow(Mathf.Abs(targetY - hereY), 2)));
+		//Debug.Log(miscH);
 			//add start to list
-			current = new NodeScript(mover.tileX, ((Mathf.Abs(targetX - mover.tileX) ^ 2) + (Mathf.Abs(targetY - mover.tileY) ^ 2)), mover.tileX, mover.tileY);
+		current = new NodeScript(0,0, hereX, hereY);
 			open.Add(current);
 			openXY.Add(current.XY);
 			nodeMap[(int)current.XY.x, (int)current.XY.y] = current;
 
 			
-			while(open.Count > 0 ) {
+			while(open.Count > 0 && found == false ) {
 				//find Current
-				int fcost = 0;
+				int fcost = open[0].f;
 				int list = 0;
-				for (int y = 0; y < open.Count; y++) {
+				for (int y = 0; y <= open.Count-1; y++) {
 					if (open[y].f< fcost) {
 						current = open[y];
 						fcost = open[y].f;
@@ -87,45 +97,53 @@ public class AStarAI : MonoBehaviour {
 
 				//if current = goal, backtrack to goal.
 				if (current.XY == new Vector2(targetX, targetY)) {
-					misc = new NodeScript(mover.tileX, (((targetX) ^ 2) + ((targetY) ^ 2)), (int)targetX, (int)targetY);
+				found = true;
+				int miscPC = nodeMap[(int)current.XY.x, (int)current.XY.y].g;
+				misc = new NodeScript(0, miscPC, (int)targetX, (int)targetY);
 					misc.parent = current.XY;
 					nodeMap[(int)misc.XY.x, (int)misc.XY.y] = misc;
 					open.Clear();
 					FindPath();
+
 				} else {
 
 					// Check and gen. children
-				for(int y = 0; y < 3; y++)
-					if (maze.WallCheck((byte)(current.XY.x + dirCheck[y].x), (byte)(current.XY.y + dirCheck[y].y)) == true && !closed.Contains(new Vector2((byte)(current.XY.x + dirCheck[y].x), (byte)(current.XY.y + dirCheck[y].y)))) {
-						misc = new NodeScript(mover.tileX, ((Mathf.Abs(targetX - (int)current.XY.x) ^ 2) + (Mathf.Abs(targetY - (int)current.XY.y) ^ 2)), (int)(current.XY.x + dirCheck[y].x), (int)(current.XY.y + dirCheck[y].y));
-						misc.parent = current.XY;
-						//if on openlist
-						if (openXY.Contains(new Vector2(current.XY.x + dirCheck[y].x, current.XY.y + dirCheck[y].y))) {
-							list = openXY.IndexOf(new Vector2(current.XY.x, current.XY.y + 1));
+				for(int y = 0; y <= 3; y++) {
+					Debug.Log(y);
+					//if within maze size (this was a problem, not sure how exactly)
+					if ((current.XY.x + dirCheck[y].x) <= maze.mapWidth - 1 && (current.XY.y + dirCheck[y].y) <= maze.mapWidth-1 && (current.XY.x + dirCheck[y].x) >= 0 && (current.XY.y + dirCheck[y].y) >= 0) {
+						
+						// if not on closed and not a wall
+						if (maze.WallCheck((byte)(current.XY.x + dirCheck[y].x), (byte)(current.XY.y + dirCheck[y].y)) == true && !closed.Contains(new Vector2((byte)(current.XY.x + dirCheck[y].x), (byte)(current.XY.y + dirCheck[y].y)))) {
 
-							//if path is better, use that instead. 
-							if (open[list].g > misc.g) {
-								open[list] = misc;
+							int miscPC = nodeMap[(int)current.XY.x, (int)current.XY.y].pathCost;
+							miscH = (int)((Mathf.Pow(Mathf.Abs(targetX - (current.XY.x + dirCheck[y].x)), 2f)) + (Mathf.Pow(Mathf.Abs(targetY - (current.XY.y + dirCheck[y].y)), 2)));
+							misc = new NodeScript(miscPC,miscH, (int)(current.XY.x + dirCheck[y].x), (int)(current.XY.y + dirCheck[y].y));
+							misc.parent = current.XY;
+
+							//if on openlist
+							if (openXY.Contains(new Vector2(current.XY.x + dirCheck[y].x, current.XY.y + dirCheck[y].y))) {
+								list = openXY.IndexOf(new Vector2(current.XY.x + dirCheck[y].x, current.XY.y + dirCheck[y].y));
+								//Debug.Log("list:" + list+ " size "+openXY.Count+" "+open.Count);
+						
+								//if path is better, use that instead. 
+								if (open[list].g > misc.g) {
+									open[list] = misc;
+									nodeMap[(int)misc.XY.x, (int)misc.XY.y] = misc;
+								} else { Debug.Log("Nope"); }
+
+							} else {
+								//add to list
+								open.Add(misc);
+								openXY.Add(misc.XY);
 								nodeMap[(int)misc.XY.x, (int)misc.XY.y] = misc;
+
 							}
-
-						} else {
-							//add to list
-							open.Add(misc);
-							openXY.Add(misc.XY);
-							nodeMap[(int)misc.XY.x, (int)misc.XY.y] = misc;
-
-
 						}
-
-
 					}
-
+				  }
 				}
-
 			}
-
-
 		}
 
 	private void FindPath()
