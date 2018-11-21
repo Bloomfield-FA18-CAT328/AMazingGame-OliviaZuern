@@ -55,7 +55,7 @@ public class TaurusAI : MonoBehaviour {
 				break;
 		}
 
-		if (map.WallCheck(targetX, targetY) == true && x != behind) {
+		if (map.IsClear(targetX, targetY) == true && x != behind) {
 			mover.keyInput = x;
 			behind = mover.keyInput + 2;
 			if (behind >= 4) { behind -= 4; }

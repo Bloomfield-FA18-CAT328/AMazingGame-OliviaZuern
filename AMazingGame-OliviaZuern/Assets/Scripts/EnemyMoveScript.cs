@@ -123,7 +123,7 @@ public class EnemyMoveScript : MonoBehaviour {
 			
 				isMoving = false;
 
-				if (aS == true) { gameObject.GetComponent<AStarAI>().NextDirection(); }
+				if (aS == true) {gameObject.GetComponent<AStarAI>().NextDirection(tileX, tileY);}
 			}
 
 		} else {
@@ -149,7 +149,7 @@ public class EnemyMoveScript : MonoBehaviour {
 				dirX -= 1;
 				break;
 		}
-		if (map.WallCheck(dirX, dirY) == true) {
+		if (map.IsClear(dirX, dirY) == true) {
 			isMoving = true;
 			direction = keyInput;
 		}

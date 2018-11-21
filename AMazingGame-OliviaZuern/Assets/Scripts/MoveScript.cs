@@ -95,7 +95,7 @@ public class MoveScript : MonoBehaviour {
 					dirX -= 1;
 					break;
 			}
-			if (map.WallCheck(dirX, dirY) == true) {
+			if (map.IsClear(dirX, dirY) == true) {
 				isMoving = true;
 				direction = keyInput;
 			}

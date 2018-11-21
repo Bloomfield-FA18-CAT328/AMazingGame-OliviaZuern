@@ -171,7 +171,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7e1f67685bfdf184f906b63ff83a6d32, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  col: {r: 0, g: 0.96039844, b: 1, a: 0}
+  col: {r: 0, g: 0.96039844, b: 1, a: 1}
   pathNodes: []
 --- !u!114 &114820267890027000
 MonoBehaviour:
@@ -184,7 +184,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b00761e2d87026e4aa5c9c08ad2bb594, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  col: {r: 0, g: 0.45613194, b: 1, a: 0}
+  col: {r: 0, g: 0.45613194, b: 1, a: 1}
   x: 0
 --- !u!114 &114974709780656168
 MonoBehaviour:
